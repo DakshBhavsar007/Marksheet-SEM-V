@@ -8,7 +8,8 @@ from flask import Flask, request, jsonify, render_template_string
 
 app = Flask(__name__)
 
-JS_PATH = r'c:\Users\parul\Desktop\marksheet\marksheet_SEM-IV\new_datamarksheet.js'
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+JS_PATH = os.path.join(BASE_DIR, 'new_datamarksheet.js')
 
 # In-memory transaction state
 pending_db = None
@@ -16,40 +17,18 @@ pending_subject = ""
 pending_target = ""
 
 SUBJECT_KEYS = {
-    'dm': {
-        'overall': 'dm',
-        't1': 'dm1',
-        't2': 'dm2',
-        't3': 'dm3',
-        't4': 'dm4'
+    'cn': {
+        'overall': 'cn',
+        't1': 'cn1',
+        't2': 'cn2'
     },
-    'coa': {
-        'overall': 'coa',
-        't1': 'coa1',
-        't2': 'coa2',
-        't3': 'coa3',
-        't4': 'coa4'
+    'eef': {
+        'overall': 'eef',
+        't1': 'eef'
     },
-    'fsd2': {
-        'overall': 'fsd2',
-        't1': 'fsd21',
-        't2': 'fsd22',
-        't3': 'fsd23',
-        't4': 'fsd24'
-    },
-    'python2': {
-        'overall': 'python2',
-        't1': 'fcsp',  # Python-II T1 is stored as fcsp
-        't2': 'python22',
-        't3': 'python23',
-        't4': 'python24'
-    },
-    'toc': {
-        'overall': 'toc',
-        't1': 'toc1',
-        't2': 'toc2',
-        't3': 'toc3',
-        't4': 'toc4'
+    'ea': {
+        'overall': 'ea',
+        't1': 'ea'
     }
 }
 
@@ -261,24 +240,20 @@ HTML_TEMPLATE = """
                 <!-- Left: Settings -->
                 <div>
                     <div class="form-group">
-                        <label>Select Target Subject</label>
+                        <label>Select Target Subject (Sem V)</label>
                         <select class="select-input" id="subject" name="subject" required>
-                            <option value="dm">Discrete Mathematics (DM)</option>
-                            <option value="coa">Computer Organization & Architecture (COA)</option>
-                            <option value="fsd2">Full Stack Development-II (FSD-II)</option>
-                            <option value="python2">Python-II</option>
-                            <option value="toc">Theory of Computation (TOC)</option>
+                            <option value="cn">Computer Networks (CN) [50 + 50 = 100]</option>
+                            <option value="eef">Evolution of Economics and Finance (EEF) [100]</option>
+                            <option value="ea">Engineering Aptitude (EA) [100]</option>
                         </select>
                     </div>
 
                     <div class="form-group">
                         <label>Target Database Column / Exam</label>
                         <select class="select-input" id="examTarget" name="examTarget" required>
-                            <option value="overall">Cumulative Overall Subject Score (e.g. coa, dm)</option>
-                            <option value="t2">T2 Score (e.g. coa2, dm2)</option>
-                            <option value="t3">T3 Score (e.g. coa3, dm3)</option>
-                            <option value="t4">T4 Score (e.g. coa4, dm4)</option>
-                            <option value="t1">T1 Score (e.g. fcsp - Python-II Only)</option>
+                            <option value="t1">T1 Score (CN T1: /50 | EEF: /100 | EA: /100)</option>
+                            <option value="t2">T2 Score (CN T2: /50)</option>
+                            <option value="overall">Cumulative Overall Subject Score (e.g. cn, eef, ea)</option>
                         </select>
                     </div>
 
@@ -708,13 +683,11 @@ def upload_file():
                     calculated_change = (pdf_val - old_val) * mult
                     s[cumulative_key] = round((s.get(cumulative_key, 0.0) or 0.0) + calculated_change, 2)
         
-        # Recalculate totals
-        dm = s.get('dm', 0.0) or 0.0
-        coa = s.get('coa', 0.0) or 0.0
-        fsd2 = s.get('fsd2', 0.0) or s.get('fsd-ii', 0.0) or 0.0
-        python2 = s.get('python2', 0.0) or 0.0
-        toc = s.get('toc', 0.0) or 0.0
-        s['total'] = round(dm + coa + fsd2 + python2 + toc, 2)
+        # Recalculate totals for Sem-V
+        cn = s.get('cn', 0.0) or 0.0
+        eef = s.get('eef', 0.0) or 0.0
+        ea = s.get('ea', 0.0) or 0.0
+        s['total'] = round(cn + eef + ea, 2)
         
         new_cumulative = s.get(cumulative_key, 0.0) or 0.0
         cum_delta = round(new_cumulative - old_cumulative, 2)
@@ -753,7 +726,7 @@ def upload_file():
         'sample_logs': all_logs[:50]
     })
 
-HTML_PATH = r'c:\Users\parul\Desktop\marksheet\marksheet_SEM-IV\28.html'
+HTML_PATH = os.path.join(BASE_DIR, '28.html')
 
 def bump_html_version():
     if not os.path.exists(HTML_PATH):

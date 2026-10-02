@@ -1,0 +1,1947 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GradeX | Ultimate Sem-IV Marksheet</title>
+    <meta name="description" content="Advanced Academic Performance Dashboard for LJ University - Semester IV">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- Icons & Charts -->
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- TailwindCSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: ['selector', '[data-theme="dark"]'],
+            theme: {
+                extend: {
+                    colors: {
+                        surface: { DEFAULT: 'var(--bg-surface)', '2': 'var(--bg-surface-2)' },
+                        bdr: 'var(--border)',
+                        pri: { DEFAULT: '#7c6aef', soft: 'rgba(124,106,239,0.12)', glow: 'rgba(124,106,239,0.25)' },
+                        txt: { DEFAULT: 'var(--text)', sec: 'var(--text-secondary)', tri: 'var(--text-tertiary)' }
+                    },
+                    fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'], sig: ['Great Vibes', 'cursive'], outfit: ['Outfit', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    <style>
+        :root {
+            --bg-body: #07080d;
+            --bg-surface: #10111a;
+            --bg-surface-2: #181924;
+            --bg-hover: rgba(255, 255, 255, 0.04);
+            --border: rgba(255, 255, 255, 0.07);
+            --text: #f0f0f5;
+            --text-secondary: #8b8fa3;
+            --text-tertiary: #5c5f73;
+        }
+
+        [data-theme="light"] {
+            --bg-body: #f5f6fa;
+            --bg-surface: #ffffff;
+            --bg-surface-2: #f0f1f5;
+            --bg-hover: rgba(0, 0, 0, 0.03);
+            --border: rgba(0, 0, 0, 0.06);
+            --text: #1a1a2e;
+            --text-secondary: #6b7085;
+            --text-tertiary: #9ca0b0;
+        }
+
+        body {
+            background: var(--bg-body);
+            color: var(--text);
+            font-family: 'Inter', system-ui, sans-serif;
+            transition: background 0.4s, color 0.4s;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Ambient background glow orbs */
+        body::before,
+        body::after {
+            content: '';
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.08;
+            z-index: 0;
+            pointer-events: none;
+            animation: orb-float 20s ease-in-out infinite alternate;
+        }
+
+        body::before {
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, #7c6aef 0%, transparent 70%);
+            top: -150px;
+            left: -100px;
+        }
+
+        body::after {
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, #22d3ee 0%, transparent 70%);
+            bottom: -120px;
+            right: -80px;
+            animation-delay: -10s;
+        }
+
+        [data-theme="light"] body::before,
+        [data-theme="light"] body::after {
+            opacity: 0.04;
+        }
+
+        @keyframes orb-float {
+            0% {
+                transform: translate(0, 0) scale(1);
+            }
+
+            50% {
+                transform: translate(40px, 30px) scale(1.1);
+            }
+
+            100% {
+                transform: translate(-20px, -15px) scale(0.95);
+            }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--text-tertiary);
+            border-radius: 3px;
+        }
+
+        /* Card base */
+        .card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            transition: background 0.4s, border-color 0.25s, box-shadow 0.3s;
+            position: relative;
+            z-index: 1;
+        }
+
+        .card:hover {
+            border-color: rgba(124, 106, 239, 0.15);
+            box-shadow: 0 4px 24px -4px rgba(124, 106, 239, 0.06);
+        }
+
+        [data-theme="light"] .card:hover {
+            border-color: rgba(108, 92, 231, 0.12);
+            box-shadow: 0 4px 24px -4px rgba(108, 92, 231, 0.08);
+        }
+
+        /* Tab indicator animated pill */
+        .tab-pill {
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            height: calc(100% - 6px);
+            background: #7c6aef;
+            border-radius: 100px;
+            z-index: 1;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 2px 8px rgba(124, 106, 239, 0.25);
+        }
+
+        /* Theme ball */
+        .theme-ball {
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        [data-theme="light"] .theme-ball {
+            transform: translateX(34px);
+            background: #f59e0b !important;
+            box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
+        }
+
+        [data-theme="dark"] .icon-moon {
+            color: #fff !important;
+        }
+
+        [data-theme="light"] .icon-sun {
+            color: #fff !important;
+        }
+
+        [data-theme="light"] .tab-pill {
+            background: #6c5ce7;
+        }
+
+        /* Form input */
+        .fi {
+            background: var(--bg-surface-2);
+            border: 1px solid var(--border);
+            color: var(--text);
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .fi:focus {
+            border-color: #7c6aef;
+            box-shadow: 0 0 0 3px rgba(124, 106, 239, 0.12);
+        }
+
+        .fi option {
+            background: var(--bg-surface);
+            color: var(--text);
+        }
+
+        /* Table */
+        .tbl {
+            border-collapse: collapse;
+            font-size: 0.82rem;
+        }
+
+        .tbl thead th {
+            background: var(--bg-surface);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            cursor: pointer;
+            user-select: none;
+            transition: color 0.2s;
+        }
+
+        .tbl thead th:hover {
+            color: #7c6aef;
+        }
+
+        .tbl tbody tr {
+            border-bottom: 1px solid var(--border);
+            transition: background 0.15s;
+        }
+
+        .tbl tbody tr:hover {
+            background: var(--bg-hover);
+        }
+
+        /* Cell helpers */
+        .c-rank {
+            color: #7c6aef;
+            font-variant-numeric: tabular-nums;
+        }
+
+        [data-theme="light"] .c-rank {
+            color: #5b44d4;
+        }
+
+        .c-total {
+            color: #34d399;
+            background: rgba(52, 211, 153, 0.1);
+            font-variant-numeric: tabular-nums;
+        }
+
+        [data-theme="light"] .c-total {
+            color: #059669;
+            background: rgba(5, 150, 105, 0.12);
+        }
+
+        .c-enr {
+            font-family: 'Cascadia Code', 'Consolas', monospace;
+            color: var(--text-tertiary);
+        }
+
+        .c-div {
+            background: var(--bg-surface-2);
+        }
+
+        .c-num {
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* ═══ HIGHLIGHTS ═══ */
+
+        /* Top 3 Ranks — Dark */
+        .row-top td {
+            background: rgba(251, 191, 36, 0.10);
+        }
+
+        .row-top:hover td {
+            background: rgba(251, 191, 36, 0.15);
+        }
+
+        .row-top .c-rank {
+            color: #fbbf24;
+            text-shadow: 0 0 8px rgba(251, 191, 36, 0.3);
+        }
+
+        /* Top 3 Ranks — Light */
+        [data-theme="light"] .row-top td {
+            background: rgba(245, 158, 11, 0.15) !important;
+        }
+
+        [data-theme="light"] .row-top:hover td {
+            background: rgba(245, 158, 11, 0.22) !important;
+        }
+
+        [data-theme="light"] .row-top .c-rank {
+            color: #b45309;
+            text-shadow: none;
+        }
+
+        /* Special Highlighted Rows — Dark */
+        .row-hl {
+            border-left: 4px solid #ec4899 !important;
+        }
+
+        .row-hl td {
+            background: rgba(236, 72, 153, 0.12) !important;
+        }
+
+        .row-hl:hover td {
+            background: rgba(236, 72, 153, 0.18) !important;
+        }
+
+        .row-hl .hl-dot {
+            display: inline-block;
+            width: 7px;
+            height: 7px;
+            background: #ec4899;
+            border-radius: 50%;
+            box-shadow: 0 0 6px #ec4899;
+            margin-right: 6px;
+            vertical-align: middle;
+        }
+
+        /* Special Highlighted Rows — Light */
+        [data-theme="light"] .row-hl {
+            border-left: 4px solid #db2777 !important;
+        }
+
+        [data-theme="light"] .row-hl td {
+            background: rgba(219, 39, 119, 0.12) !important;
+        }
+
+        [data-theme="light"] .row-hl:hover td {
+            background: rgba(219, 39, 119, 0.18) !important;
+        }
+
+        [data-theme="light"] .row-hl .hl-dot {
+            background: #db2777;
+            box-shadow: 0 0 6px rgba(219, 39, 119, 0.5);
+        }
+
+        /* Crown animation */
+        .sig-crown {
+            animation: fc 3s ease-in-out infinite;
+        }
+
+        @keyframes fc {
+
+            0%,
+            100% {
+                transform: translateY(0) rotate(15deg);
+            }
+
+            50% {
+                transform: translateY(-3px) rotate(20deg);
+            }
+        }
+
+        /* Premium stat card glow on hover */
+        .stat-card {
+            transition: transform 0.25s cubic-bezier(.4, 0, .2, 1), box-shadow 0.3s, border-color 0.3s;
+        }
+
+        .stat-card:hover {
+            box-shadow: 0 8px 32px -6px rgba(124, 106, 239, 0.12);
+        }
+
+        /* Animated gradient text for header */
+        .gradient-title {
+            background: linear-gradient(135deg, #ffffff 0%, #a78bfa 35%, #7c6aef 60%, #22d3ee 100%);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradient-shift 6s ease-in-out infinite;
+        }
+
+        [data-theme="light"] .gradient-title {
+            background: linear-gradient(135deg, #1a1a2e 0%, #5b44d4 35%, #7c6aef 60%, #0ea5e9 100%);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradient-shift 6s ease-in-out infinite;
+        }
+
+        @keyframes gradient-shift {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        /* Premium version badge */
+        .version-badge {
+            background: linear-gradient(135deg, rgba(124, 106, 239, 0.15) 0%, rgba(34, 211, 238, 0.1) 100%);
+            border: 1px solid rgba(124, 106, 239, 0.2);
+            backdrop-filter: blur(8px);
+            animation: badge-pulse 4s ease-in-out infinite;
+        }
+
+        @keyframes badge-pulse {
+
+            0%,
+            100% {
+                box-shadow: 0 0 0 0 rgba(124, 106, 239, 0.1);
+            }
+
+            50% {
+                box-shadow: 0 0 12px 2px rgba(124, 106, 239, 0.08);
+            }
+        }
+
+        /* 🏆 Pro Topper Cards */
+        .pro-topper-card {
+            position: relative;
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            overflow: hidden;
+            z-index: 1;
+        }
+        
+        .pro-topper-card::after {
+            content: '';
+            position: absolute;
+            left: 0; bottom: 0;
+            width: 100%; height: 2px;
+            background: var(--subj-color);
+            box-shadow: 0 0 8px var(--subj-color);
+            transform: scaleX(0);
+            transform-origin: right;
+            transition: transform 0.4s ease;
+        }
+
+        .pro-topper-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px -8px rgba(0,0,0,0.2);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .pro-topper-card:hover::after {
+            transform: scaleX(1);
+            transform-origin: left;
+        }
+
+        .pro-crown {
+            color: var(--subj-color);
+            font-size: 1.15rem;
+            filter: drop-shadow(0 0 6px var(--subj-color));
+            opacity: 0.8;
+            transition: all 0.3s ease;
+        }
+
+        .pro-topper-card:hover .pro-crown {
+            opacity: 1;
+            transform: scale(1.15) rotate(5deg);
+        }
+        
+        .pro-name {
+            font-weight: 800;
+            letter-spacing: -0.01em;
+            color: var(--text);
+            transition: color 0.3s;
+        }
+        
+        .pro-topper-card:hover .pro-name {
+            background: linear-gradient(90deg, #fff, #cbd5e1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        [data-theme="light"] .pro-topper-card:hover .pro-name {
+            background: linear-gradient(90deg, #0f172a, #475569);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        [data-theme="light"] .pro-topper-card {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+        }
+        [data-theme="light"] .pro-topper-card:hover {
+            box-shadow: 0 12px 24px -8px rgba(0,0,0,0.08);
+            border-color: rgba(0,0,0,0.08);
+        }
+
+        /* Footer styling */
+        .footer-section {
+            border-top: 1px solid var(--border);
+            background: linear-gradient(180deg, transparent 0%, rgba(124, 106, 239, 0.02) 100%);
+        }
+
+        [data-theme="light"] .footer-section {
+            background: linear-gradient(180deg, transparent 0%, rgba(108, 92, 231, 0.03) 100%);
+        }
+
+        /* Load-more bar */
+        .load-bar {
+            background: var(--bg-surface-2);
+            border-top: 1px solid var(--border);
+        }
+
+        /* Badges */
+        .badge-topper {
+            background: rgba(251, 191, 36, 0.2);
+            color: #fbbf24;
+            border: 1px solid rgba(251, 191, 36, 0.4);
+        }
+
+        .badge-green {
+            background: rgba(52, 211, 153, 0.15);
+            color: #34d399;
+        }
+
+        .badge-blue {
+            background: rgba(96, 165, 250, 0.15);
+            color: #60a5fa;
+        }
+
+        .badge-yellow {
+            background: rgba(251, 191, 36, 0.15);
+            color: #fbbf24;
+        }
+
+        .badge-red {
+            background: rgba(248, 113, 113, 0.15);
+            color: #f87171;
+        }
+
+        .mark-badge {
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 0.78rem;
+            display: inline-block;
+        }
+
+        /* Search Match */
+        mark.search-match {
+            background: rgba(251, 191, 36, 0.35);
+            color: inherit;
+            padding: 0 2px;
+            border-radius: 2px;
+        }
+
+        /* Modal Overlay */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(8px);
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            transform: scale(0.95);
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .modal-overlay.show .modal-card {
+            transform: scale(1);
+        }
+
+        /* ═══ MOBILE-FIRST RESPONSIVE ═══ */
+
+        .tab-scroll-container {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+
+        .tab-scroll-container::-webkit-scrollbar {
+            display: none;
+        }
+
+        @media (max-width: 639px) {
+            .mobile-controls-wrapper {
+                flex-direction: column !important;
+                align-items: stretch !important;
+                gap: 10px !important;
+                padding: 12px !important;
+            }
+
+            .header-actions {
+                width: 100%;
+                justify-content: flex-end;
+            }
+
+            .dashboard-grid {
+                grid-template-columns: 1fr !important;
+            }
+
+            .chart-section {
+                min-height: 220px;
+            }
+
+            .chart-area {
+                height: 170px;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 8px;
+            }
+
+            .stat-card {
+                min-height: 80px !important;
+                padding: 10px !important;
+            }
+
+            .stat-card .stat-value {
+                font-size: 1.15rem !important;
+            }
+
+            .stat-card .stat-label {
+                font-size: 0.55rem !important;
+            }
+
+            .stat-card .stat-info {
+                font-size: 0.5rem !important;
+            }
+
+            .stat-card .stat-bg-icon {
+                font-size: 1.8rem !important;
+            }
+
+            .filters-section {
+                flex-direction: column !important;
+                width: 100% !important;
+                gap: 8px !important;
+            }
+
+            .filters-section>* {
+                width: 100% !important;
+                min-width: 0 !important;
+            }
+
+            .search-box {
+                width: 100% !important;
+            }
+
+            .search-box input {
+                width: 100% !important;
+            }
+
+            .filter-select {
+                width: 100% !important;
+            }
+
+            .filter-row {
+                flex-direction: row !important;
+                gap: 8px !important;
+            }
+
+            .filter-row>select {
+                flex: 1 !important;
+            }
+
+            .tab-btn {
+                padding: 5px 10px !important;
+                font-size: 0.65rem !important;
+                white-space: nowrap;
+            }
+
+            .student-badge {
+                font-size: 0.6rem !important;
+                padding: 3px 8px !important;
+            }
+
+            .tbl {
+                font-size: 0.7rem;
+            }
+
+            .tbl td,
+            .tbl th {
+                padding: 6px 8px !important;
+            }
+
+            .export-btn {
+                padding: 6px 12px !important;
+                font-size: 0.7rem !important;
+            }
+        }
+
+        @media (min-width: 640px) and (max-width: 1023px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr !important;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(4, 1fr) !important;
+            }
+
+            .filters-section {
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+
+            .search-box {
+                flex: 1 1 200px;
+            }
+
+            .filter-select {
+                flex: 1 1 120px;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .dashboard-grid {
+                grid-template-columns: 5fr 3fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+
+<body class="min-h-screen overflow-x-hidden">
+    <div class="max-w-[1520px] mx-auto px-3 sm:px-5 py-4 sm:py-5 pb-16">
+
+        <!-- HEADER -->
+        <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 pb-5 sm:pb-6">
+            <div class="flex items-center gap-3">
+                <div
+                    class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-[#7c6aef] to-[#22d3ee] flex items-center justify-center shadow-[0_4px_16px_rgba(124,106,239,0.3)] shrink-0">
+                    <i class="ri-graduation-cap-fill text-white text-lg sm:text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl sm:text-3xl font-extrabold tracking-tight gradient-title">
+                        LJ University
+                    </h1>
+                    <p id="headerSubtitle"
+                        class="text-[0.65rem] sm:text-sm text-[var(--text-secondary)] font-light tracking-wide mt-0.5 flex items-center gap-1.5">
+                        <span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                        Advanced Academic Performance Dashboard &bull; Overall Sem-IV
+                    </p>
+                </div>
+            </div>
+            <div class="flex items-center gap-2 header-actions">
+                <span
+                    class="version-badge hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[0.6rem] font-bold uppercase tracking-wider text-[#7c6aef]">
+                    <i class="ri-flashlight-fill text-xs"></i> GradeX v4.0
+                </span>
+                <div class="relative w-[68px] h-[34px] rounded-full bg-[var(--bg-surface-2)] border border-[var(--border)] cursor-pointer flex items-center justify-between px-2 shrink-0"
+                    onclick="toggleTheme()" title="Toggle Theme">
+                    <i class="ri-moon-line text-sm text-[var(--text-tertiary)] icon-moon z-[1]"></i>
+                    <i class="ri-sun-line text-sm text-[var(--text-tertiary)] icon-sun z-[1]"></i>
+                    <div
+                        class="theme-ball absolute top-[3px] left-[3px] w-[26px] h-[26px] bg-[#7c6aef] rounded-full shadow-[0_2px_8px_rgba(124,106,239,0.25)]">
+                    </div>
+                </div>
+                <button onclick="exportCSV()"
+                    class="fi export-btn inline-flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-full text-xs font-semibold hover:border-[#7c6aef] hover:shadow-[0_4px_12px_rgba(124,106,239,0.15)] hover:-translate-y-0.5 transition-all cursor-pointer shrink-0">
+                    <i class="ri-download-2-line"></i> Export
+                </button>
+            </div>
+        </header>
+
+        <!-- DASHBOARD -->
+        <div class="grid dashboard-grid gap-3 sm:gap-4 mb-3 sm:mb-4">
+            <div class="card rounded-xl p-3 sm:p-5 chart-section" style="min-height:240px">
+                <div
+                    class="flex items-center justify-between text-sm font-semibold text-[var(--text-secondary)] mb-3 sm:mb-4">
+                    <span class="flex items-center gap-2">
+                        <i class="ri-bar-chart-grouped-line text-cyan-400"></i> Sem-IV Subject Average Performance
+                    </span>
+                    <span class="text-xs font-normal text-[var(--text-tertiary)]">Max: 100 Marks</span>
+                </div>
+                <div class="relative h-[180px] sm:h-[200px] chart-area w-full"><canvas id="gradeChart"></canvas></div>
+            </div>
+
+            <div class="grid stats-grid gap-2 sm:gap-3">
+                <div class="card rounded-xl p-3 sm:p-4 flex flex-col justify-between relative overflow-hidden border-b-[3px] border-b-[#7c6aef] stat-card hover:-translate-y-0.5 transition-transform"
+                    style="min-height:90px">
+                    <i
+                        class="ri-user-star-line absolute right-3 bottom-3 text-3xl sm:text-4xl opacity-[0.06] stat-bg-icon"></i>
+                    <span
+                        class="text-[0.6rem] sm:text-[0.65rem] font-bold uppercase tracking-wider text-[var(--text-tertiary)] stat-label">Top
+                        Performer</span>
+                    <span class="text-xl sm:text-2xl font-extrabold tracking-tight stat-value"
+                        id="stat-topper">--</span>
+                    <span class="text-[0.55rem] sm:text-[0.6rem] font-medium text-[#7c6aef] stat-info">Highest Total
+                        (/500)</span>
+                </div>
+
+                <div class="card rounded-xl p-3 sm:p-4 flex flex-col justify-between relative overflow-hidden border-b-[3px] border-b-emerald-400 stat-card hover:-translate-y-0.5 transition-transform"
+                    style="min-height:90px">
+                    <i
+                        class="ri-group-line absolute right-3 bottom-3 text-3xl sm:text-4xl opacity-[0.06] stat-bg-icon"></i>
+                    <span
+                        class="text-[0.6rem] sm:text-[0.65rem] font-bold uppercase tracking-wider text-[var(--text-tertiary)] stat-label">Total
+                        Students</span>
+                    <span class="text-xl sm:text-2xl font-extrabold tracking-tight stat-value" id="stat-count">--</span>
+                    <span class="text-[0.55rem] sm:text-[0.6rem] font-medium text-emerald-400 stat-info">Active
+                        Records</span>
+                </div>
+
+                <div class="card rounded-xl p-3 sm:p-4 flex flex-col justify-between relative overflow-hidden border-b-[3px] border-b-pink-500 stat-card hover:-translate-y-0.5 transition-transform"
+                    style="min-height:90px">
+                    <i
+                        class="ri-functions absolute right-3 bottom-3 text-3xl sm:text-4xl opacity-[0.06] stat-bg-icon"></i>
+                    <span
+                        class="text-[0.6rem] sm:text-[0.65rem] font-bold uppercase tracking-wider text-[var(--text-tertiary)] stat-label">Class
+                        Average</span>
+                    <span class="text-xl sm:text-2xl font-extrabold tracking-tight stat-value" id="stat-avg">--</span>
+                    <span class="text-[0.55rem] sm:text-[0.6rem] font-medium text-pink-500 stat-info">Across All
+                        Subjects</span>
+                </div>
+
+                <div class="card rounded-xl p-3 sm:p-4 flex flex-col justify-between relative overflow-hidden border-b-[3px] border-b-amber-400 stat-card hover:-translate-y-0.5 transition-transform"
+                    style="min-height:90px">
+                    <i
+                        class="ri-trophy-line absolute right-3 bottom-3 text-3xl sm:text-4xl opacity-[0.06] stat-bg-icon"></i>
+                    <span
+                        class="text-[0.6rem] sm:text-[0.65rem] font-bold uppercase tracking-wider text-[var(--text-tertiary)] stat-label">Pass
+                        Rate</span>
+                    <span class="text-xl sm:text-2xl font-extrabold tracking-tight stat-value" id="stat-pass">--</span>
+                    <span class="text-[0.55rem] sm:text-[0.6rem] font-medium text-amber-400 stat-info"
+                        id="stat-pass-info">Min 33 per subject</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- SUBJECT TOPPERS & DIVISION STANDINGS -->
+        <div class="flex items-center justify-between mb-3 mt-6 sm:mt-8">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-[0_4px_12px_rgba(251,191,36,0.3)] relative overflow-hidden group">
+                    <div class="absolute inset-0 bg-white/20 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+                    <i class="ri-vip-crown-fill text-white text-sm sm:text-base drop-shadow-md"></i>
+                </div>
+                <div>
+                    <h2 class="text-sm sm:text-lg font-extrabold text-[var(--text)] tracking-tight">Academic Excellence Board</h2>
+                    <p class="text-[0.65rem] sm:text-xs text-[var(--text-tertiary)] font-medium mt-0.5">Top Performers & Division Standings</p>
+                </div>
+            </div>
+            <div class="h-[1px] flex-1 bg-gradient-to-r from-[var(--border)] to-transparent mx-4 hidden md:block opacity-70"></div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-3 sm:gap-4 mb-4 sm:mb-5 relative">
+            <div class="absolute -inset-4 bg-gradient-to-b from-amber-500/5 to-transparent rounded-2xl -z-10 blur-xl pointer-events-none opacity-50"></div>
+            <div class="pro-topper-card rounded-xl p-3.5 flex flex-col justify-between lg:col-span-1" style="--subj-color: #7c6aef;">
+                <div class="text-[0.65rem] font-bold uppercase text-[var(--text-tertiary)] flex items-center justify-between">
+                    <span class="tracking-widest">Discrete Math</span> <i class="ri-medal-fill pro-crown"></i>
+                </div>
+                <div id="topper-dm-name" class="pro-name text-xs truncate mt-1.5" title="Loading...">--</div>
+                <div class="flex justify-between items-end text-[0.65rem] mt-2">
+                    <span id="topper-dm-meta" class="text-[var(--text-tertiary)] font-medium">--</span>
+                    <span id="topper-dm-score" class="font-black text-[0.95rem]" style="color: var(--subj-color);">--</span>
+                </div>
+            </div>
+
+            <div class="pro-topper-card rounded-xl p-3.5 flex flex-col justify-between lg:col-span-1" style="--subj-color: #22d3ee;">
+                <div class="text-[0.65rem] font-bold uppercase text-[var(--text-tertiary)] flex items-center justify-between">
+                    <span class="tracking-widest">COA</span> <i class="ri-medal-fill pro-crown"></i>
+                </div>
+                <div id="topper-coa-name" class="pro-name text-xs truncate mt-1.5" title="Loading...">--</div>
+                <div class="flex justify-between items-end text-[0.65rem] mt-2">
+                    <span id="topper-coa-meta" class="text-[var(--text-tertiary)] font-medium">--</span>
+                    <span id="topper-coa-score" class="font-black text-[0.95rem]" style="color: var(--subj-color);">--</span>
+                </div>
+            </div>
+
+            <div class="pro-topper-card rounded-xl p-3.5 flex flex-col justify-between lg:col-span-1" style="--subj-color: #ec4899;">
+                <div class="text-[0.65rem] font-bold uppercase text-[var(--text-tertiary)] flex items-center justify-between">
+                    <span class="tracking-widest">FSD-II</span> <i class="ri-medal-fill pro-crown"></i>
+                </div>
+                <div id="topper-fsd-name" class="pro-name text-xs truncate mt-1.5" title="Loading...">--</div>
+                <div class="flex justify-between items-end text-[0.65rem] mt-2">
+                    <span id="topper-fsd-meta" class="text-[var(--text-tertiary)] font-medium">--</span>
+                    <span id="topper-fsd-score" class="font-black text-[0.95rem]" style="color: var(--subj-color);">--</span>
+                </div>
+            </div>
+
+            <div class="pro-topper-card rounded-xl p-3.5 flex flex-col justify-between lg:col-span-1" style="--subj-color: #fbbf24;">
+                <div class="text-[0.65rem] font-bold uppercase text-[var(--text-tertiary)] flex items-center justify-between">
+                    <span class="tracking-widest">Python-II</span> <i class="ri-medal-fill pro-crown"></i>
+                </div>
+                <div id="topper-python-name" class="pro-name text-xs truncate mt-1.5" title="Loading...">--</div>
+                <div class="flex justify-between items-end text-[0.65rem] mt-2">
+                    <span id="topper-python-meta" class="text-[var(--text-tertiary)] font-medium">--</span>
+                    <span id="topper-python-score" class="font-black text-[0.95rem]" style="color: var(--subj-color);">--</span>
+                </div>
+            </div>
+
+            <div class="pro-topper-card rounded-xl p-3.5 flex flex-col justify-between lg:col-span-1" style="--subj-color: #34d399;">
+                <div class="text-[0.65rem] font-bold uppercase text-[var(--text-tertiary)] flex items-center justify-between">
+                    <span class="tracking-widest">TOC</span> <i class="ri-medal-fill pro-crown"></i>
+                </div>
+                <div id="topper-toc-name" class="pro-name text-xs truncate mt-1.5" title="Loading...">--</div>
+                <div class="flex justify-between items-end text-[0.65rem] mt-2">
+                    <span id="topper-toc-meta" class="text-[var(--text-tertiary)] font-medium">--</span>
+                    <span id="topper-toc-score" class="font-black text-[0.95rem]" style="color: var(--subj-color);">--</span>
+                </div>
+            </div>
+
+            <div class="card rounded-xl p-3.5 flex flex-col justify-between lg:col-span-1 bg-[var(--bg-surface-2)] shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] border-[var(--border)] relative overflow-hidden group">
+                <div class="absolute -right-6 -top-6 text-6xl opacity-[0.03] group-hover:opacity-[0.06] transition-opacity duration-500 text-amber-400">
+                    <i class="ri-medal-fill"></i>
+                </div>
+                <div class="text-[0.65rem] font-bold uppercase text-[var(--text-tertiary)] mb-2 flex items-center gap-1.5 tracking-wider z-10">
+                    <i class="ri-medal-line text-amber-400 text-sm"></i> Div Standings
+                </div>
+                <div id="divStandingsList" class="space-y-1.5 text-xs z-10">
+                    <!-- Dynamic Top Divisions -->
+                </div>
+            </div>
+        </div>
+
+        <!-- CONTROLS -->
+        <div
+            class="card rounded-xl px-3 sm:px-4 py-3 mb-3 sm:mb-4 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-3 mobile-controls-wrapper">
+            <div class="flex flex-wrap items-center gap-2 sm:gap-2.5 w-full lg:w-auto">
+                <!-- View Tabs -->
+                <div class="tab-scroll-container">
+                    <div
+                        class="relative inline-flex bg-[var(--bg-surface-2)] border border-[var(--border)] rounded-full p-[3px]">
+                        <div class="tab-pill" id="tabIndicator"></div>
+                        <button
+                            class="tab-btn view-tab active relative z-[2] bg-transparent border-none text-[var(--text-secondary)] px-3 sm:px-4 py-1.5 rounded-full cursor-pointer font-semibold text-xs transition-colors"
+                            onclick="setMode('new',this)" style="font-family:inherit">Rank View</button>
+                        <button
+                            class="tab-btn view-tab relative z-[2] bg-transparent border-none text-[var(--text-secondary)] px-3 sm:px-4 py-1.5 rounded-full cursor-pointer font-semibold text-xs transition-colors"
+                            onclick="setMode('original',this)" style="font-family:inherit">Classic View</button>
+                    </div>
+                </div>
+                <!-- Dept Tabs -->
+                <div class="tab-scroll-container">
+                    <div
+                        class="relative inline-flex bg-[var(--bg-surface-2)] border border-[var(--border)] rounded-full p-[3px]">
+                        <div class="tab-pill" id="deptTabIndicator"></div>
+                        <button
+                            class="tab-btn dept-tab active relative z-[2] bg-transparent border-none text-[var(--text-secondary)] px-2.5 sm:px-3 py-1.5 rounded-full cursor-pointer font-semibold text-xs transition-colors"
+                            onclick="setDept('Overall',this)" style="font-family:inherit">Overall</button>
+                        <button
+                            class="tab-btn dept-tab relative z-[2] bg-transparent border-none text-[var(--text-secondary)] px-2.5 sm:px-3 py-1.5 rounded-full cursor-pointer font-semibold text-xs transition-colors"
+                            onclick="setDept('SY1',this)" style="font-family:inherit">SY1</button>
+                        <button
+                            class="tab-btn dept-tab relative z-[2] bg-transparent border-none text-[var(--text-secondary)] px-2.5 sm:px-3 py-1.5 rounded-full cursor-pointer font-semibold text-xs transition-colors"
+                            onclick="setDept('SY2',this)" style="font-family:inherit">SY2</button>
+                        <button
+                            class="tab-btn dept-tab relative z-[2] bg-transparent border-none text-[var(--text-secondary)] px-2.5 sm:px-3 py-1.5 rounded-full cursor-pointer font-semibold text-xs transition-colors"
+                            onclick="setDept('SY3',this)" style="font-family:inherit">SY3</button>
+                        <button
+                            class="tab-btn dept-tab relative z-[2] bg-transparent border-none text-[var(--text-secondary)] px-2.5 sm:px-3 py-1.5 rounded-full cursor-pointer font-semibold text-xs transition-colors"
+                            onclick="setDept('SY4',this)" style="font-family:inherit">SY4</button>
+                    </div>
+                </div>
+                <span
+                    class="student-badge inline-flex items-center gap-1 px-2.5 sm:px-3 py-1 rounded-full text-[0.65rem] sm:text-[0.7rem] font-semibold bg-[rgba(124,106,239,0.1)] text-[#7c6aef] border border-[rgba(124,106,239,0.15)]">
+                    <i class="ri-user-line text-xs"></i> <span id="badgeCount">0</span> students
+                </span>
+            </div>
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full lg:w-auto filters-section">
+                <div class="relative w-full sm:w-auto sm:flex-1 lg:flex-none lg:w-[240px] search-box">
+                    <i
+                        class="ri-search-line absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-tertiary)] text-sm"></i>
+                    <input type="text" id="searchInput" placeholder="Search name, roll, enrollment..."
+                        class="fi w-full py-2.5 sm:py-2 pl-9 pr-3 rounded-lg text-xs font-medium outline-none"
+                        style="font-family:inherit">
+                </div>
+                <div class="flex gap-2 w-full sm:w-auto filter-row">
+                    <select id="branchFilter"
+                        class="fi filter-select py-2.5 sm:py-2 px-3 rounded-lg text-xs font-medium outline-none cursor-pointer flex-1 sm:flex-none sm:w-[130px]"
+                        style="font-family:inherit">
+                        <option value="">All Branches</option>
+                    </select>
+                    <select id="divFilter"
+                        class="fi filter-select py-2.5 sm:py-2 px-3 rounded-lg text-xs font-medium outline-none cursor-pointer flex-1 sm:flex-none sm:w-[130px]"
+                        style="font-family:inherit">
+                        <option value="">All Divisions</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- TABLE -->
+        <div class="card rounded-xl overflow-hidden mb-4">
+            <div class="overflow-auto max-h-[72vh]" id="tableScroll">
+                <table class="tbl w-full">
+                    <thead>
+                        <tr>
+                            <th class="text-left px-4 py-3 text-[0.65rem] font-bold uppercase tracking-wide text-[var(--text-tertiary)] whitespace-nowrap"
+                                onclick="sortTable('rank')">Rank <i
+                                    class="ri-arrow-up-down-line text-[0.6rem] opacity-50"></i></th>
+                            <th class="text-left px-4 py-3 text-[0.65rem] font-bold uppercase tracking-wide text-[var(--text-tertiary)] whitespace-nowrap"
+                                onclick="sortTable('roll')">Roll No <i
+                                    class="ri-arrow-up-down-line text-[0.6rem] opacity-50"></i></th>
+                            <th
+                                class="text-left px-4 py-3 text-[0.65rem] font-bold uppercase tracking-wide text-[var(--text-tertiary)]">
+                                DEPT</th>
+                            <th class="text-left px-4 py-3 text-[0.65rem] font-bold uppercase tracking-wide text-[var(--text-tertiary)]"
+                                onclick="sortTable('div')">Div <i
+                                    class="ri-arrow-up-down-line text-[0.6rem] opacity-50"></i></th>
+                            <th class="text-left px-4 py-3 text-[0.65rem] font-bold uppercase tracking-wide text-[var(--text-tertiary)]"
+                                onclick="sortTable('branch')">Branch <i
+                                    class="ri-arrow-up-down-line text-[0.6rem] opacity-50"></i></th>
+                            <th class="text-left px-4 py-3 text-[0.65rem] font-bold uppercase tracking-wide text-[var(--text-tertiary)]"
+                                onclick="sortTable('enrollment')">Enrollment</th>
+                            <th class="text-left px-4 py-3 text-[0.65rem] font-bold uppercase tracking-wide text-[var(--text-tertiary)]"
+                                onclick="sortTable('name')">Student Name</th>
+                            <th
+                                class="text-left px-4 py-3 text-[0.65rem] font-bold uppercase tracking-wide text-[var(--text-tertiary)]">
+                                Mentor</th>
+                            <th class="text-left px-4 py-3 text-[0.65rem] font-bold uppercase tracking-wide text-[var(--text-tertiary)]"
+                                onclick="sortTable('dm')">DM</th>
+                            <th class="text-left px-4 py-3 text-[0.65rem] font-bold uppercase tracking-wide text-[var(--text-tertiary)]"
+                                onclick="sortTable('coa')">COA</th>
+                            <th class="text-left px-4 py-3 text-[0.65rem] font-bold uppercase tracking-wide text-[var(--text-tertiary)]"
+                                onclick="sortTable('fsd2')">FSD-II</th>
+                            <th class="text-left px-4 py-3 text-[0.65rem] font-bold uppercase tracking-wide text-[var(--text-tertiary)]"
+                                onclick="sortTable('python2')">Python-II</th>
+                            <th class="text-left px-4 py-3 text-[0.65rem] font-bold uppercase tracking-wide text-[var(--text-tertiary)]"
+                                onclick="sortTable('toc')">TOC</th>
+                            <th class="text-left px-4 py-3 text-[0.65rem] font-bold uppercase tracking-wide text-[var(--text-tertiary)]"
+                                onclick="sortTable('total')">Total</th>
+                            <th class="text-left px-4 py-3 text-[0.65rem] font-bold uppercase tracking-wide text-[var(--text-tertiary)]"
+                                onclick="sortTable('sem3spi')">Sem-III SPI</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody"></tbody>
+                </table>
+            </div>
+            <!-- Load More Bar -->
+            <div id="loadMoreBar" class="load-bar hidden text-center py-2.5">
+                <button onclick="loadMore()" id="loadMoreBtn"
+                    class="text-xs font-semibold text-[#7c6aef] hover:underline cursor-pointer bg-transparent border-none"
+                    style="font-family:inherit">
+                    <i class="ri-arrow-down-line"></i> Show more rows (<span id="remainCount">0</span> remaining)
+                </button>
+            </div>
+        </div>
+
+        <!-- DIVISION & EXAM ANALYTICS MATRIX CARDS -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4 mb-6">
+            <!-- Division Subject Performance Matrix -->
+            <div class="card rounded-xl p-4">
+                <h3
+                    class="text-xs font-bold uppercase text-[var(--text-secondary)] tracking-wider mb-3 flex items-center gap-1.5">
+                    <i class="ri-grid-line text-[#7c6aef]"></i> Division-Wise Subject Performance Matrix
+                </h3>
+                <div class="overflow-x-auto">
+                    <table class="tbl w-full text-center">
+                        <thead>
+                            <tr>
+                                <th class="text-left px-3 py-2 text-[0.65rem] text-[var(--text-tertiary)]">Div</th>
+                                <th class="px-2 py-2 text-[0.65rem] text-[var(--text-tertiary)]">DM</th>
+                                <th class="px-2 py-2 text-[0.65rem] text-[var(--text-tertiary)]">COA</th>
+                                <th class="px-2 py-2 text-[0.65rem] text-[var(--text-tertiary)]">FSD-II</th>
+                                <th class="px-2 py-2 text-[0.65rem] text-[var(--text-tertiary)]">Python-II</th>
+                                <th class="px-2 py-2 text-[0.65rem] text-[var(--text-tertiary)]">TOC</th>
+                                <th class="px-2 py-2 text-[0.65rem] text-cyan-400">Total Avg</th>
+                            </tr>
+                        </thead>
+                        <tbody id="matrixTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Exam Term-Wise Matrix -->
+            <div class="card rounded-xl p-4">
+                <div class="flex items-center justify-between mb-3">
+                    <h3
+                        class="text-xs font-bold uppercase text-[var(--text-secondary)] tracking-wider flex items-center gap-1.5">
+                        <i class="ri-pulse-line text-emerald-400"></i> Term Exam Progressive Matrix
+                    </h3>
+                    <select id="examMatrixSubject" onchange="updateExamMatrix()"
+                        class="fi py-1 px-2.5 rounded text-xs font-semibold outline-none">
+                        <option value="dm">Discrete Math</option>
+                        <option value="coa">COA</option>
+                        <option value="fsd2">FSD-II</option>
+                        <option value="python2">Python-II</option>
+                        <option value="toc">TOC</option>
+                    </select>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="tbl w-full text-center">
+                        <thead>
+                            <tr>
+                                <th class="text-left px-3 py-2 text-[0.65rem] text-[var(--text-tertiary)]">Div</th>
+                                <th class="px-2 py-2 text-[0.65rem] text-[var(--text-tertiary)]">T1 Avg</th>
+                                <th class="px-2 py-2 text-[0.65rem] text-[var(--text-tertiary)]">T2 Avg</th>
+                                <th class="px-2 py-2 text-[0.65rem] text-[var(--text-tertiary)]">T3 Avg</th>
+                                <th class="px-2 py-2 text-[0.65rem] text-[var(--text-tertiary)]">T4 Avg</th>
+                                <th class="px-2 py-2 text-[0.65rem] text-emerald-400">Overall</th>
+                            </tr>
+                        </thead>
+                        <tbody id="examMatrixTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- FOOTER -->
+        <footer class="footer-section mt-4 py-5 px-4 rounded-xl">
+            <div class="flex flex-col sm:flex-row justify-between items-center gap-3">
+                <div class="flex items-center gap-2">
+                    <div
+                        class="w-7 h-7 rounded-lg bg-gradient-to-br from-[#7c6aef] to-[#22d3ee] flex items-center justify-center">
+                        <i class="ri-graduation-cap-fill text-white text-xs"></i>
+                    </div>
+                    <div>
+                        <span class="text-xs font-bold text-[var(--text)]">GradeX</span>
+                        <span class="text-[0.6rem] text-[var(--text-tertiary)] block leading-none">LJ University &bull;
+                            SY Sem-IV 2026</span>
+                    </div>
+                </div>
+                <div class="flex items-center gap-4 text-[0.6rem] text-[var(--text-tertiary)]">
+                    <span class="flex items-center gap-1"><i class="ri-database-2-line text-[#7c6aef]"></i> <span
+                            id="footerStudentCount">0</span> Records</span>
+                    <span class="flex items-center gap-1"><i class="ri-time-line text-emerald-400"></i> Last Updated:
+                        July 2026</span>
+                    <span class="flex items-center gap-1"><i class="ri-code-s-slash-line text-pink-400"></i> Built with
+                        <span class="text-[var(--text-secondary)] font-medium">precision</span></span>
+                </div>
+            </div>
+        </footer>
+
+    </div>
+
+    <!-- STUDENT MODAL POPUP -->
+    <div id="studentModal" class="modal-overlay flex items-center justify-center p-3">
+        <div class="modal-card rounded-2xl w-full max-w-xl p-5 sm:p-6 relative max-h-[90vh] overflow-y-auto">
+            <button onclick="closeModal()"
+                class="absolute top-4 right-4 text-[var(--text-tertiary)] hover:text-[var(--text)] text-xl w-8 h-8 rounded-full bg-[var(--bg-surface-2)] flex items-center justify-center transition-colors">
+                <i class="ri-close-line"></i>
+            </button>
+
+            <!-- Header Info -->
+            <div class="mb-4">
+                <span id="modalAlertBanner"
+                    class="hidden mb-3 p-2 rounded-lg bg-red-500/15 border border-red-500/30 text-red-400 text-xs font-semibold flex items-center gap-1.5"></span>
+                <div class="flex items-start justify-between">
+                    <div>
+                        <h2 id="modalName" class="text-xl font-bold text-[var(--text)] tracking-tight">--</h2>
+                        <p id="modalInfo" class="text-xs text-[var(--text-secondary)] font-medium mt-0.5">--</p>
+                    </div>
+                    <span id="modalRank"
+                        class="px-3 py-1 rounded-full text-xs font-bold bg-[#7c6aef]/15 text-[#7c6aef] border border-[#7c6aef]/30">#--</span>
+                </div>
+            </div>
+
+            <!-- Basic Info Grid -->
+            <div
+                class="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-4 p-3 rounded-xl bg-[var(--bg-surface-2)] border border-[var(--border)] text-xs">
+                <div>
+                    <span
+                        class="block text-[0.6rem] uppercase text-[var(--text-tertiary)] font-semibold">Enrollment</span>
+                    <span id="modalEnroll" class="font-mono font-medium text-[var(--text)]">--</span>
+                </div>
+                <div>
+                    <span class="block text-[0.6rem] uppercase text-[var(--text-tertiary)] font-semibold">Mentor</span>
+                    <span id="modalMentor" class="font-medium text-[var(--text)]">--</span>
+                </div>
+                <div>
+                    <span class="block text-[0.6rem] uppercase text-[var(--text-tertiary)] font-semibold">Total
+                        Score</span>
+                    <span id="modalTotal" class="font-bold text-emerald-400">--</span>
+                </div>
+                <div>
+                    <span class="block text-[0.6rem] uppercase text-[var(--text-tertiary)] font-semibold">Div
+                        Diff</span>
+                    <span id="modalDivComp" class="font-semibold">--</span>
+                </div>
+            </div>
+
+            <!-- SPI Breakdown Grid -->
+            <div class="mb-4">
+                <span
+                    class="block text-[0.65rem] uppercase tracking-wider text-[var(--text-tertiary)] font-bold mb-2">SPI
+                    Performance Trajectory</span>
+                <div
+                    class="grid grid-cols-4 gap-2 p-3 rounded-xl bg-[var(--bg-surface-2)] border border-[var(--border)] text-center text-xs">
+                    <div>
+                        <span class="block text-[0.6rem] text-[var(--text-tertiary)]">Sem 1</span>
+                        <span id="modalSem1" class="font-semibold text-cyan-400">--</span>
+                    </div>
+                    <div>
+                        <span class="block text-[0.6rem] text-[var(--text-tertiary)]">Sem 2</span>
+                        <span id="modalSem2" class="font-semibold text-cyan-400">--</span>
+                    </div>
+                    <div>
+                        <span class="block text-[0.6rem] text-[var(--text-tertiary)]">Sem 3</span>
+                        <span id="modalSem3" class="font-semibold text-pink-400">--</span>
+                    </div>
+                    <div>
+                        <span class="block text-[0.6rem] text-[var(--text-tertiary)]">Est. Sem 4</span>
+                        <span id="modalSem4" class="font-bold text-emerald-400">--</span>
+                    </div>
+                </div>
+                <div class="flex justify-between items-center text-[0.65rem] mt-1.5 px-1">
+                    <span class="text-[var(--text-tertiary)]">Sem 3 to Sem 4 Trajectory:</span>
+                    <span id="modalSpiTrajectory" class="font-semibold">--</span>
+                </div>
+            </div>
+
+            <!-- Subject Progress Bars -->
+            <div>
+                <span
+                    class="block text-[0.65rem] uppercase tracking-wider text-[var(--text-tertiary)] font-bold mb-2">Sem-IV
+                    Subject Marks & Letter Grades</span>
+                <div id="modalSubjectBars" class="space-y-2.5"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="new_datamarksheet.js?v=5"></script>
+    <script>
+            (function () {
+                'use strict';
+
+                /* ═══ THEME ═══ */
+                function toggleTheme() {
+                    const t = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+                    document.documentElement.setAttribute('data-theme', t);
+                    localStorage.setItem('theme', t);
+                    scheduleChartUpdate();
+                }
+                window.toggleTheme = toggleTheme;
+
+                (function () { document.documentElement.setAttribute('data-theme', localStorage.getItem('theme') || 'dark'); })();
+
+                /* ═══ STATE ═══ */
+                let currentMode = 'new', currentDept = 'Overall';
+                let filteredData = [], gradeChart = null;
+                let BATCH = 60, renderedCount = 0;
+                let debounceId = null, chartRafId = null;
+                let lastSortKey = '', sortDir = 'desc';
+                let currentSearchQuery = '';
+
+                /* ═══ PREPROCESS DATA (one-time) ═══ */
+                const rawData = (typeof data !== 'undefined' ? data : []).map(s => {
+                    s.dm = parseFloat(s.dm) || 0;
+                    s.coa = parseFloat(s.coa) || 0;
+                    s.fsd2 = parseFloat(s.fsd2) || 0;
+                    s.python2 = parseFloat(s.python2) || 0;
+                    s.toc = parseFloat(s.toc) || 0;
+                    s.total = s.dm + s.coa + s.fsd2 + s.python2 + s.toc;
+                    if (!s.dept) s.dept = 'SY4';
+                    s.backlogs = parseInt(s.backlogs || 0);
+                    return s;
+                }).sort((a, b) => b.total - a.total);
+
+                // Compute Top Subject Marks for Badge Highlights
+                window.maxMarks = { dm: 0, coa: 0, fsd2: 0, python2: 0, toc: 0 };
+                rawData.forEach(s => {
+                    if (s.dm > window.maxMarks.dm) window.maxMarks.dm = s.dm;
+                    if (s.coa > window.maxMarks.coa) window.maxMarks.coa = s.coa;
+                    if (s.fsd2 > window.maxMarks.fsd2) window.maxMarks.fsd2 = s.fsd2;
+                    if (s.python2 > window.maxMarks.python2) window.maxMarks.python2 = s.python2;
+                    if (s.toc > window.maxMarks.toc) window.maxMarks.toc = s.toc;
+                });
+
+                rawData.forEach((s, i) => s.globalRank = i + 1);
+
+                const depts = [...new Set(rawData.map(s => s.dept))];
+                const dc = {}; depts.forEach(d => dc[d] = 1);
+                const allData = rawData.map(s => { s.deptRank = dc[s.dept]++; return s; });
+
+                /* ═══ TAB INDICATOR ═══ */
+                function setIndicator(el, id) {
+                    const ind = document.getElementById(id);
+                    if (!ind || !el) return;
+                    const r = el.getBoundingClientRect(), p = el.parentElement.getBoundingClientRect();
+                    ind.style.width = r.width + 'px';
+                    ind.style.left = (r.left - p.left) + 'px';
+                }
+
+                window.setMode = function (mode, el) {
+                    currentMode = mode;
+                    setIndicator(el, 'tabIndicator');
+                    document.querySelectorAll('.view-tab').forEach(t => t.classList.remove('active'));
+                    el.classList.add('active');
+                    el.style.color = '#fff';
+                    document.querySelectorAll('.view-tab:not(.active)').forEach(t => t.style.color = '');
+                    run();
+                };
+
+                window.setDept = function (dept, el) {
+                    currentDept = dept;
+                    setIndicator(el, 'deptTabIndicator');
+                    document.querySelectorAll('.dept-tab').forEach(t => { t.classList.remove('active'); t.style.color = ''; });
+                    el.classList.add('active'); el.style.color = '#fff';
+                    updateDivisions(dept); updateBranches(dept);
+                    document.getElementById('headerSubtitle').textContent =
+                        'Advanced Academic Performance Dashboard \u2022 ' + dept + ' Sem-IV';
+                    run();
+                };
+
+                /* ═══ FILTERS ═══ */
+                function updateBranches(dept) {
+                    const sel = document.getElementById('branchFilter');
+                    if (!sel) return;
+                    sel.innerHTML = '<option value="">All Branches</option>';
+                    const pool = dept !== 'Overall' ? allData.filter(s => s.dept === dept) : allData;
+                    [...new Set(pool.map(s => s.branch))].filter(Boolean).sort().forEach(b => sel.add(new Option(b, b)));
+                }
+
+                function updateDivisions(dept) {
+                    const sel = document.getElementById('divFilter');
+                    if (!sel) return;
+                    sel.innerHTML = '<option value="">All Divisions</option>';
+                    const pool = dept !== 'Overall' ? allData.filter(s => s.dept === dept) : allData;
+                    [...new Set(pool.map(s => s.div))].filter(Boolean).sort().forEach(d => sel.add(new Option(d, d)));
+                }
+
+                function filterData() {
+                    const search = document.getElementById('searchInput').value.toLowerCase().trim();
+                    currentSearchQuery = search;
+                    const branch = document.getElementById('branchFilter').value;
+                    const divSel = document.getElementById('divFilter').value;
+
+                    let pool = currentDept !== 'Overall' ? allData.filter(s => s.dept === currentDept) : allData;
+
+                    filteredData = pool.filter(s => {
+                        let ms = true;
+                        if (search) {
+                            const isNum = /^\d+$/.test(search);
+                            ms = (isNum && search.length < 5 && s.roll == search)
+                                || s.name.toLowerCase().includes(search)
+                                || s.enrollment.includes(search)
+                                || (s.mentor && s.mentor.toLowerCase().includes(search));
+                        }
+                        const mb = !branch || s.branch === branch;
+                        const md = !divSel || s.div === divSel;
+                        return ms && mb && md;
+                    });
+
+                    if (currentMode === 'new') {
+                        filteredData.sort((a, b) => currentDept === 'Overall' ? a.globalRank - b.globalRank : a.deptRank - b.deptRank);
+                    } else {
+                        filteredData.sort((a, b) => a.roll - b.roll);
+                    }
+                }
+
+                /* ═══ BADGE BUILDER ═══ */
+                function getMarkBadgeHTML(val, subKey) {
+                    let colorClass = '';
+                    const isTopper = window.maxMarks && val === window.maxMarks[subKey] && val > 0;
+
+                    if (isTopper) colorClass = 'badge-topper';
+                    else if (val >= 90) colorClass = 'badge-green';
+                    else if (val >= 75) colorClass = 'badge-blue';
+                    else if (val >= 35) colorClass = 'badge-yellow';
+                    else colorClass = 'badge-red';
+
+                    return `<span class="mark-badge ${colorClass}">${val.toFixed(1)}</span>`;
+                }
+
+                /* ═══ TEXT HIGHLIGHTER ═══ */
+                function highlightText(text, search) {
+                    if (!search) return text;
+                    const escaped = search.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+                    return text.replace(new RegExp(escaped, 'gi'), match => `<mark class="search-match">${match}</mark>`);
+                }
+
+                /* ═══ ROW BUILDER ═══ */
+                function buildRowHTML(s) {
+                    const rank = currentDept === 'Overall' ? s.globalRank : s.deptRank;
+                    const roll = s.roll;
+                    const div = s.div;
+
+                    let cls = '';
+                    if (rank <= 3 && currentMode === 'new') cls = 'row-top';
+                    const isHL = s.dept === 'SY4' && [35, 31, 63, 86, 72].includes(s.roll);
+                    if (isHL) cls += ' row-hl';
+
+                    const dot = isHL ? '<span class="hl-dot"></span>' : '';
+
+                    let rawName = (s.name.includes('BHAVSAR DAKSH') || s.name.includes('DAKSH BHAVSAR'))
+                        ? '<span class="relative inline-block"><span class="sig-crown absolute -top-1 -right-3 text-xs">👑</span><span class="font-sig text-xl" style="text-shadow:0 0 12px rgba(124,106,239,0.3)">Daksh Bhavsar</span></span>'
+                        : s.name;
+
+                    if (s.backlogs > 0) {
+                        rawName += ` <span class="px-1.5 py-0.5 rounded text-[0.6rem] font-bold bg-red-500/20 text-red-400 border border-red-500/30">${s.backlogs} BK</span>`;
+                    }
+
+                    const highlightedName = highlightText(rawName, currentSearchQuery);
+                    const highlightedEnroll = highlightText(s.enrollment, currentSearchQuery);
+                    const highlightedMentor = highlightText(s.mentor || '', currentSearchQuery);
+
+                    return `<tr class="${cls} cursor-pointer" onclick="showStudentModal('${s.enrollment}')">
+<td class="px-4 py-2.5 whitespace-nowrap c-rank font-extrabold text-sm">${dot}#${rank}</td>
+<td class="px-4 py-2.5 whitespace-nowrap font-semibold c-num">${roll}</td>
+<td class="px-4 py-2.5 whitespace-nowrap">${s.dept}</td>
+<td class="px-4 py-2.5 whitespace-nowrap"><span class="c-div px-2 py-0.5 rounded text-xs font-medium">${div}</span></td>
+<td class="px-4 py-2.5 whitespace-nowrap">${s.branch}</td>
+<td class="px-4 py-2.5 whitespace-nowrap c-enr text-xs">${highlightedEnroll}</td>
+<td class="px-4 py-2.5 whitespace-nowrap font-medium">${highlightedName}</td>
+<td class="px-4 py-2.5 whitespace-nowrap">${highlightedMentor}</td>
+<td class="px-4 py-2.5 whitespace-nowrap">${getMarkBadgeHTML(s.dm, 'dm')}</td>
+<td class="px-4 py-2.5 whitespace-nowrap">${getMarkBadgeHTML(s.coa, 'coa')}</td>
+<td class="px-4 py-2.5 whitespace-nowrap">${getMarkBadgeHTML(s.fsd2, 'fsd2')}</td>
+<td class="px-4 py-2.5 whitespace-nowrap">${getMarkBadgeHTML(s.python2, 'python2')}</td>
+<td class="px-4 py-2.5 whitespace-nowrap">${getMarkBadgeHTML(s.toc, 'toc')}</td>
+<td class="px-4 py-2.5 whitespace-nowrap"><span class="c-total px-2.5 py-1 rounded-md font-bold text-xs inline-block">${s.total.toFixed(2)}</span></td>
+<td class="px-4 py-2.5 whitespace-nowrap text-cyan-400 font-semibold">${s.sem3spi != null ? s.sem3spi.toFixed(2) : '--'}</td>
+</tr>`;
+                }
+
+                function renderBatch(start, count) {
+                    const end = Math.min(start + count, filteredData.length);
+                    let html = '';
+                    for (let i = start; i < end; i++) html += buildRowHTML(filteredData[i]);
+                    return { html, rendered: end };
+                }
+
+                function renderTable() {
+                    const tbody = document.getElementById('tableBody');
+                    document.getElementById('badgeCount').textContent = filteredData.length;
+
+                    if (!filteredData.length) {
+                        tbody.innerHTML = '<tr><td colspan="15" class="text-center py-16 text-[var(--text-tertiary)]"><i class="ri-search-eye-line block text-3xl opacity-30 mb-2"></i>No records found</td></tr>';
+                        renderedCount = 0;
+                        updateLoadMore();
+                        return;
+                    }
+
+                    const batch = renderBatch(0, BATCH);
+                    tbody.innerHTML = batch.html;
+                    renderedCount = batch.rendered;
+                    updateLoadMore();
+                }
+
+                function updateLoadMore() {
+                    const bar = document.getElementById('loadMoreBar');
+                    const remain = filteredData.length - renderedCount;
+                    if (remain > 0) {
+                        bar.classList.remove('hidden');
+                        document.getElementById('remainCount').textContent = remain;
+                    } else {
+                        bar.classList.add('hidden');
+                    }
+                }
+
+                window.loadMore = function () {
+                    const batch = renderBatch(renderedCount, BATCH);
+                    document.getElementById('tableBody').insertAdjacentHTML('beforeend', batch.html);
+                    renderedCount = batch.rendered;
+                    updateLoadMore();
+                };
+
+                /* ═══ AUTO-LOAD ON SCROLL ═══ */
+                const tableScroll = document.getElementById('tableScroll');
+                let scrollTicking = false;
+                if (tableScroll) {
+                    tableScroll.addEventListener('scroll', function () {
+                        if (scrollTicking) return;
+                        scrollTicking = true;
+                        requestAnimationFrame(() => {
+                            const el = tableScroll;
+                            if (el.scrollTop + el.clientHeight >= el.scrollHeight - 100) {
+                                if (renderedCount < filteredData.length) window.loadMore();
+                            }
+                            scrollTicking = false;
+                        });
+                    }, { passive: true });
+                }
+
+                /* ═══ STATS ═══ */
+                function updateStats() {
+                    const passEl = document.getElementById('stat-pass');
+                    const passInfo = document.getElementById('stat-pass-info');
+
+                    if (!filteredData.length) {
+                        document.getElementById('stat-count').textContent = '--';
+                        document.getElementById('stat-avg').textContent = '--';
+                        document.getElementById('stat-topper').textContent = '--';
+                        passEl.textContent = '--';
+                        passInfo.textContent = 'Min 33 per subject';
+                        return;
+                    }
+
+                    const total = filteredData.reduce((a, c) => a + c.total, 0);
+                    const n = filteredData.length;
+
+                    // Top performer
+                    const topper = filteredData.reduce((p, c) => p.total > c.total ? p : c);
+                    document.getElementById('stat-topper').textContent = topper.total.toFixed(1);
+
+                    // Count
+                    document.getElementById('stat-count').textContent = n;
+
+                    // Average Score
+                    document.getElementById('stat-avg').textContent = (total / n).toFixed(1);
+
+                    // Pass rate: pass if scored >= 33 in EACH of the 5 subjects
+                    const passed = filteredData.filter(s => s.dm >= 33 && s.coa >= 33 && s.fsd2 >= 33 && s.python2 >= 33 && s.toc >= 33).length;
+                    const failed = n - passed;
+                    const rate = ((passed / n) * 100).toFixed(1);
+
+                    passEl.textContent = rate + '%';
+                    if (failed === 0) {
+                        passInfo.textContent = 'All ' + n + ' Cleared \u2714';
+                    } else {
+                        passInfo.textContent = passed + ' passed \u00B7 ' + failed + ' failed';
+                    }
+
+                    // Subject Toppers calculation
+                    const subjects = [
+                        { key: 'dm', nameId: 'topper-dm-name', metaId: 'topper-dm-meta', scoreId: 'topper-dm-score' },
+                        { key: 'coa', nameId: 'topper-coa-name', metaId: 'topper-coa-meta', scoreId: 'topper-coa-score' },
+                        { key: 'fsd2', nameId: 'topper-fsd-name', metaId: 'topper-fsd-meta', scoreId: 'topper-fsd-score' },
+                        { key: 'python2', nameId: 'topper-python-name', metaId: 'topper-python-meta', scoreId: 'topper-python-score' },
+                        { key: 'toc', nameId: 'topper-toc-name', metaId: 'topper-toc-meta', scoreId: 'topper-toc-score' }
+                    ];
+
+                    subjects.forEach(sub => {
+                        const topStudent = filteredData.reduce((p, c) => (p[sub.key] || 0) > (c[sub.key] || 0) ? p : c);
+                        const sScore = topStudent[sub.key] || 0;
+                        const parts = topStudent.name.split(' ');
+                        const formatName = parts.length >= 2 ? `${parts[0]} ${parts[1]}` : topStudent.name;
+
+                        document.getElementById(sub.nameId).textContent = formatName;
+                        document.getElementById(sub.nameId).title = topStudent.name;
+                        document.getElementById(sub.metaId).textContent = `Roll ${topStudent.roll} • Div ${topStudent.div}`;
+                        document.getElementById(sub.scoreId).textContent = sScore.toFixed(1);
+                    });
+
+                    // Division Standings Calculation
+                    const divMap = {};
+                    filteredData.forEach(s => {
+                        const key = `${s.div}`;
+                        if (!divMap[key]) divMap[key] = { count: 0, sum: 0 };
+                        divMap[key].count++;
+                        divMap[key].sum += s.total;
+                    });
+
+                    const standings = Object.entries(divMap).map(([key, data]) => {
+                        return { key, avg: data.sum / data.count, count: data.count };
+                    }).sort((a, b) => b.avg - a.avg);
+
+                    let standingsHTML = '';
+                    standings.slice(0, 4).forEach((st, idx) => {
+                        let medal = `#${idx + 1}`;
+                        if (idx === 0) medal = '🥇';
+                        else if (idx === 1) medal = '🥈';
+                        else if (idx === 2) medal = '🥉';
+
+                        standingsHTML += `
+                        <div class="flex items-center justify-between text-[0.7rem] py-[2px]">
+                            <span class="font-bold text-[var(--text)] flex items-center gap-1.5">${medal} Div ${st.key} <small class="text-[var(--text-tertiary)] font-normal text-[0.6rem]">(${st.count})</small></span>
+                            <span class="font-extrabold text-[#7c6aef] bg-[#7c6aef]/10 px-1.5 py-0.5 rounded">${st.avg.toFixed(1)}</span>
+                        </div>
+                    `;
+                    });
+                    document.getElementById('divStandingsList').innerHTML = standingsHTML || '<div class="text-center text-[var(--text-tertiary)] py-1">No data</div>';
+                }
+
+                /* ═══ CHART (throttled) ═══ */
+                function scheduleChartUpdate() {
+                    if (chartRafId) cancelAnimationFrame(chartRafId);
+                    chartRafId = requestAnimationFrame(updateChart);
+                }
+
+                function updateChart() {
+                    chartRafId = null;
+                    const canvas = document.getElementById('gradeChart');
+                    if (!canvas) return;
+                    const ctx = canvas.getContext('2d');
+                    const dark = document.documentElement.getAttribute('data-theme') === 'dark';
+                    if (gradeChart) gradeChart.destroy();
+
+                    const subs = ['dm', 'coa', 'fsd2', 'python2', 'toc'];
+                    const n = filteredData.length || 1;
+                    const avgs = subs.map(k => (filteredData.reduce((a, s) => a + (s[k] || 0), 0) / n).toFixed(1));
+
+                    gradeChart = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: ['Discrete Math', 'COA', 'FSD-II', 'Python-II', 'TOC'],
+                            datasets: [{
+                                label: 'Avg Score',
+                                data: avgs,
+                                backgroundColor: [
+                                    'rgba(124,106,239,0.7)',
+                                    'rgba(34,211,238,0.7)',
+                                    'rgba(236,72,153,0.7)',
+                                    'rgba(251,191,36,0.7)',
+                                    'rgba(52,211,153,0.7)'
+                                ],
+                                borderRadius: 6,
+                                barThickness: 32
+                            }]
+                        },
+                        options: {
+                            responsive: true, maintainAspectRatio: false,
+                            animation: false,
+                            plugins: { legend: { display: false } },
+                            scales: {
+                                y: {
+                                    beginAtZero: true, max: 100,
+                                    grid: { color: dark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.04)', drawBorder: false },
+                                    ticks: { color: dark ? '#5c5f73' : '#9ca0b0', font: { size: 10 } }
+                                },
+                                x: {
+                                    grid: { display: false },
+                                    ticks: { color: dark ? '#5c5f73' : '#9ca0b0', font: { size: 10 } }
+                                }
+                            }
+                        }
+                    });
+                }
+
+                /* ═══ MATRIX ANALYTICS ═══ */
+                function updateComparisonMatrix() {
+                    const tbody = document.getElementById('matrixTableBody');
+                    if (!tbody) return;
+
+                    const divMap = {};
+                    const sem4Pool = filteredData.filter(s => s.total > 0);
+
+                    sem4Pool.forEach(s => {
+                        const key = `${s.div}`;
+                        if (!divMap[key]) {
+                            divMap[key] = { count: 0, dmSum: 0, coaSum: 0, fsdSum: 0, pySum: 0, tocSum: 0, totalSum: 0 };
+                        }
+                        divMap[key].count++;
+                        divMap[key].dmSum += s.dm;
+                        divMap[key].coaSum += s.coa;
+                        divMap[key].fsdSum += s.fsd2;
+                        divMap[key].pySum += s.python2;
+                        divMap[key].tocSum += s.toc;
+                        divMap[key].totalSum += s.total;
+                    });
+
+                    const rows = Object.entries(divMap).map(([key, data]) => {
+                        const c = data.count || 1;
+                        return {
+                            key,
+                            dmAvg: data.dmSum / c,
+                            coaAvg: data.coaSum / c,
+                            fsdAvg: data.fsdSum / c,
+                            pyAvg: data.pySum / c,
+                            tocAvg: data.tocSum / c,
+                            totalAvg: data.totalSum / c,
+                            count: data.count
+                        };
+                    }).sort((a, b) => b.totalAvg - a.totalAvg);
+
+                    let html = '';
+                    rows.forEach(r => {
+                        html += `
+                        <tr>
+                            <td class="text-left px-3 py-2 font-semibold text-[var(--text)]">Div ${r.key} <small class="text-[var(--text-tertiary)]">(${r.count})</small></td>
+                            <td class="px-2 py-2">${r.dmAvg.toFixed(1)}</td>
+                            <td class="px-2 py-2">${r.coaAvg.toFixed(1)}</td>
+                            <td class="px-2 py-2">${r.fsdAvg.toFixed(1)}</td>
+                            <td class="px-2 py-2">${r.pyAvg.toFixed(1)}</td>
+                            <td class="px-2 py-2">${r.tocAvg.toFixed(1)}</td>
+                            <td class="px-2 py-2 font-bold text-cyan-400">${r.totalAvg.toFixed(1)}</td>
+                        </tr>
+                    `;
+                    });
+                    tbody.innerHTML = html || '<tr><td colspan="7" class="text-center py-4 text-[var(--text-tertiary)]">No Sem-IV data</td></tr>';
+                }
+
+                window.updateExamMatrix = function () {
+                    const subKey = document.getElementById('examMatrixSubject').value;
+                    const tbody = document.getElementById('examMatrixTableBody');
+                    if (!tbody) return;
+
+                    const sem4Pool = filteredData.filter(s => s.total > 0);
+                    const divMap = {};
+
+                    sem4Pool.forEach(s => {
+                        const key = `${s.div}`;
+                        if (!divMap[key]) {
+                            divMap[key] = { count: 0, t1Sum: 0, t2Sum: 0, t3Sum: 0, t4Sum: 0, totalSum: 0 };
+                        }
+                        let t1 = 0, t2 = 0, t3 = 0, t4 = 0, total = s[subKey] || 0;
+                        if (subKey === 'dm') { t1 = s.dm1; t2 = s.dm2; t3 = s.dm3; t4 = s.dm4; }
+                        else if (subKey === 'coa') { t1 = s.coa1; t2 = s.coa2; t3 = s.coa3; t4 = s.coa4; }
+                        else if (subKey === 'fsd2') { t1 = s.fsd21; t2 = s.fsd22; t3 = s.fsd23; t4 = s.fsd24; }
+                        else if (subKey === 'python2') { t1 = s.python21 ?? s.fcsp; t2 = s.python22; t3 = s.python23; t4 = s.python24; }
+                        else if (subKey === 'toc') { t1 = s.toc1; t2 = s.toc2; t3 = s.toc3; t4 = s.toc4; }
+
+                        t1 = parseFloat(t1) || 0;
+                        t2 = parseFloat(t2) || 0;
+                        t3 = parseFloat(t3) || 0;
+                        t4 = parseFloat(t4) || 0;
+                        if (!t1 && total && (t2 || t3 || t4)) {
+                            t1 = Math.max(0, total - (t2 + t3 + t4));
+                        }
+
+                        divMap[key].count++;
+                        divMap[key].t1Sum += t1;
+                        divMap[key].t2Sum += t2;
+                        divMap[key].t3Sum += t3;
+                        divMap[key].t4Sum += t4;
+                        divMap[key].totalSum += total;
+                    });
+
+                    const rows = Object.entries(divMap).map(([key, data]) => {
+                        const c = data.count || 1;
+                        return {
+                            key,
+                            t1Avg: data.t1Sum / c,
+                            t2Avg: data.t2Sum / c,
+                            t3Avg: data.t3Sum / c,
+                            t4Avg: data.t4Sum / c,
+                            totalAvg: data.totalSum / c,
+                            count: data.count
+                        };
+                    }).sort((a, b) => b.totalAvg - a.totalAvg);
+
+                    let html = '';
+                    rows.forEach(r => {
+                        html += `
+                        <tr>
+                            <td class="text-left px-3 py-2 font-semibold text-[var(--text)]">Div ${r.key} <small class="text-[var(--text-tertiary)]">(${r.count})</small></td>
+                            <td class="px-2 py-2">${r.t1Avg.toFixed(1)}</td>
+                            <td class="px-2 py-2">${r.t2Avg.toFixed(1)}</td>
+                            <td class="px-2 py-2">${r.t3Avg.toFixed(1)}</td>
+                            <td class="px-2 py-2">${r.t4Avg.toFixed(1)}</td>
+                            <td class="px-2 py-2 font-bold text-emerald-400">${r.totalAvg.toFixed(1)}</td>
+                        </tr>
+                    `;
+                    });
+                    tbody.innerHTML = html || '<tr><td colspan="6" class="text-center py-4 text-[var(--text-tertiary)]">No data</td></tr>';
+                };
+
+                /* ═══ SORT ═══ */
+                window.sortTable = function (key) {
+                    if (lastSortKey === key) {
+                        sortDir = sortDir === 'asc' ? 'desc' : 'asc';
+                    } else {
+                        sortDir = 'asc';
+                        lastSortKey = key;
+                    }
+                    filteredData.sort((a, b) => {
+                        let va, vb;
+                        if (key === 'rank') {
+                            va = currentDept === 'Overall' ? a.globalRank : a.deptRank;
+                            vb = currentDept === 'Overall' ? b.globalRank : b.deptRank;
+                        } else if (key === 'roll') {
+                            va = a.roll; vb = b.roll;
+                        } else {
+                            va = a[key] ?? -1; vb = b[key] ?? -1;
+                        }
+                        if (typeof va === 'string') va = va.toLowerCase();
+                        if (typeof vb === 'string') vb = vb.toLowerCase();
+                        return (va < vb ? -1 : va > vb ? 1 : 0) * (sortDir === 'asc' ? 1 : -1);
+                    });
+                    renderTable();
+                };
+
+                /* ═══ EXPORT ═══ */
+                window.exportCSV = function () {
+                    let csv = 'Rank,Roll No,DEPT,Division,Branch,Enrollment,Name,Mentor,Discrete Math,COA,FSD-II,Python-II,TOC,Total,SEM-III SPI\n';
+                    filteredData.forEach(s => {
+                        const rk = currentDept === 'Overall' ? s.globalRank : s.deptRank;
+                        csv += `${rk},${s.roll},${s.dept},${s.div},${s.branch},${s.enrollment},"${s.name}",${s.mentor || ''},${s.dm},${s.coa},${s.fsd2},${s.python2},${s.toc},${s.total},${s.sem3spi || ''}\n`;
+                    });
+                    const a = document.createElement('a');
+                    a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
+                    a.download = `Marksheet_SemIV_${currentMode}_${currentDept}.csv`;
+                    a.click(); URL.revokeObjectURL(a.href);
+                };
+
+                /* ═══ SPI CALCULATOR ═══ */
+                function calculateSem4SPI(s) {
+                    if (s.sem4spi !== undefined && s.sem4spi !== null) {
+                        return s.sem4spi;
+                    }
+                    function getGP(marks) {
+                        const m = Math.round(marks);
+                        if (m >= 95) return 10;
+                        if (m >= 90) return 9.5;
+                        if (m >= 85) return 9;
+                        if (m >= 80) return 8.5;
+                        if (m >= 75) return 8;
+                        if (m >= 70) return 7.5;
+                        if (m >= 65) return 7;
+                        if (m >= 60) return 6.5;
+                        if (m >= 55) return 6;
+                        if (m >= 50) return 5.5;
+                        if (m >= 45) return 5;
+                        if (m >= 40) return 4.5;
+                        if (m >= 35) return 4;
+                        return 0;
+                    }
+                    const g_dm = getGP(s.dm) * 4;
+                    const g_fsd2 = getGP(s.fsd2) * 6;
+                    const g_coa = getGP(s.coa) * 5;
+                    const g_toc = getGP(s.toc) * 5;
+                    const g_python2 = getGP(s.python2) * 5;
+
+                    const totalG = Math.ceil(g_dm + g_fsd2 + g_coa + g_toc + g_python2);
+                    return totalG / 25.0;
+                }
+
+                function getLetterGrade(marks) {
+                    const m = Math.round(marks);
+                    if (m >= 95) return 'O+++';
+                    if (m >= 90) return 'O++';
+                    if (m >= 85) return 'O+';
+                    if (m >= 80) return 'O';
+                    if (m >= 75) return 'A++';
+                    if (m >= 70) return 'A+';
+                    if (m >= 65) return 'A';
+                    if (m >= 60) return 'B++';
+                    if (m >= 55) return 'B+';
+                    if (m >= 50) return 'B';
+                    if (m >= 45) return 'C';
+                    if (m >= 40) return 'D';
+                    if (m >= 35) return 'E';
+                    return 'F';
+                }
+
+                /* ═══ MODAL ACTIONS ═══ */
+                window.showStudentModal = function (enrollment) {
+                    const s = allData.find(x => x.enrollment === enrollment);
+                    if (!s) return;
+
+                    document.getElementById('modalName').innerText = s.name;
+                    document.getElementById('modalInfo').innerText = `${s.branch} • Div ${s.div} • Roll No ${s.roll}`;
+                    document.getElementById('modalEnroll').innerText = s.enrollment;
+                    document.getElementById('modalMentor').innerText = s.mentor || '--';
+                    document.getElementById('modalTotal').innerText = `${s.total.toFixed(2)} / 500`;
+
+                    const rank = currentDept === 'Overall' ? s.globalRank : s.deptRank;
+                    document.getElementById('modalRank').innerText = `#${rank}`;
+
+                    const banner = document.getElementById('modalAlertBanner');
+                    if (s.backlogs > 0) {
+                        banner.innerHTML = `<i class="ri-error-warning-line"></i> Warning: Student has ${s.backlogs} active backlog(s) in Sem-IV!`;
+                        banner.classList.remove('hidden');
+                    } else {
+                        banner.classList.add('hidden');
+                    }
+
+                    const divStudents = allData.filter(x => x.div === s.div && x.dept === s.dept);
+                    const divAvg = divStudents.reduce((a, c) => a + c.total, 0) / (divStudents.length || 1);
+                    const diff = s.total - divAvg;
+                    const diffStr = diff >= 0 ? `+${diff.toFixed(1)}` : `${diff.toFixed(1)}`;
+                    document.getElementById('modalDivComp').innerText = `${divAvg.toFixed(1)} (${diffStr})`;
+                    document.getElementById('modalDivComp').style.color = diff >= 0 ? '#34d399' : '#f87171';
+
+                    document.getElementById('modalSem1').innerText = s.sem1 != null ? s.sem1.toFixed(2) : '--';
+                    document.getElementById('modalSem2').innerText = s.sem2 != null ? s.sem2.toFixed(2) : '--';
+                    document.getElementById('modalSem3').innerText = s.sem3spi != null ? s.sem3spi.toFixed(2) : '--';
+
+                    const estSem4 = calculateSem4SPI(s);
+                    document.getElementById('modalSem4').innerText = estSem4.toFixed(2);
+
+                    if (s.sem3spi != null) {
+                        const traj = estSem4 - s.sem3spi;
+                        const trajStr = traj >= 0 ? `📈 +${traj.toFixed(2)}` : `📉 ${traj.toFixed(2)}`;
+                        document.getElementById('modalSpiTrajectory').innerText = trajStr;
+                        document.getElementById('modalSpiTrajectory').style.color = traj >= 0 ? '#34d399' : '#f87171';
+                    } else {
+                        document.getElementById('modalSpiTrajectory').innerText = '--';
+                        document.getElementById('modalSpiTrajectory').style.color = 'var(--text-tertiary)';
+                    }
+
+                    const subs = [
+                        { name: 'Discrete Math', val: s.dm, color: '#7c6aef' },
+                        { name: 'COA', val: s.coa, color: '#22d3ee' },
+                        { name: 'FSD-II', val: s.fsd2, color: '#ec4899' },
+                        { name: 'Python-II', val: s.python2, color: '#fbbf24' },
+                        { name: 'TOC', val: s.toc, color: '#34d399' }
+                    ];
+
+                    let barsHTML = '';
+                    subs.forEach(sub => {
+                        const pct = Math.min((sub.val / 100) * 100, 100);
+                        const grade = getLetterGrade(sub.val);
+                        barsHTML += `
+                        <div class="text-xs">
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="font-medium text-[var(--text)]">${sub.name} <strong style="color:${sub.color}; font-size:0.75rem; margin-left:4px;">[Grade: ${grade}]</strong></span>
+                                <span class="font-bold" style="color:${sub.color}">${sub.val.toFixed(1)} / 100</span>
+                            </div>
+                            <div class="w-full h-2 rounded-full bg-[var(--bg-surface-2)] overflow-hidden border border-[var(--border)]">
+                                <div class="h-full rounded-full transition-all duration-500" style="width: ${pct}%; background-color: ${sub.color}"></div>
+                            </div>
+                        </div>
+                    `;
+                    });
+                    document.getElementById('modalSubjectBars').innerHTML = barsHTML;
+
+                    const modal = document.getElementById('studentModal');
+                    modal.classList.add('show');
+                };
+
+                window.closeModal = function () {
+                    const modal = document.getElementById('studentModal');
+                    modal.classList.remove('show');
+                };
+
+                /* ═══ MASTER RUN ═══ */
+                function run() {
+                    filterData();
+                    renderTable();
+                    updateStats();
+                    scheduleChartUpdate();
+                    updateComparisonMatrix();
+                    updateExamMatrix();
+                }
+
+                /* ═══ EVENTS ═══ */
+                document.getElementById('searchInput').addEventListener('input', () => {
+                    clearTimeout(debounceId);
+                    debounceId = setTimeout(run, 200);
+                });
+                document.getElementById('branchFilter').addEventListener('change', run);
+                document.getElementById('divFilter').addEventListener('change', run);
+
+                /* ═══ INIT ═══ */
+                window.onload = () => {
+                    const vt = document.querySelector('.view-tab.active');
+                    if (vt) { setIndicator(vt, 'tabIndicator'); vt.style.color = '#fff'; }
+                    const dt = document.querySelector('.dept-tab[onclick*="Overall"]');
+                    if (dt) window.setDept('Overall', dt);
+                    const footerCount = document.getElementById('footerStudentCount');
+                    if (footerCount) footerCount.textContent = allData.length;
+                };
+
+            })();
+    </script>
+</body>
+
+</html>
